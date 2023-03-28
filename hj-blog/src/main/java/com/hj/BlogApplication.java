@@ -6,10 +6,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 @SpringBootApplication
-@MapperScan("com.sangeng.mapper")
-public class SanGengBlogApplication {
+@MapperScan("com.hj.mapper")
+public class BlogApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SanGengBlogApplication.class,args);
+        SpringApplication.run(BlogApplication.class,args);
     }
 }
