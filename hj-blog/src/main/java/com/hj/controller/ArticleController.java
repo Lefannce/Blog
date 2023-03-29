@@ -12,6 +12,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/article")
+/**
+ * 热门文章查询
+ */
 public class ArticleController {
 
     @Autowired
@@ -21,6 +24,19 @@ public class ArticleController {
     public ResponseResult<Article> hotArticleList(){
         ResponseResult result = articleService.hotArticleList();
     return result;
+    }
+
+    /**
+     * 首页列表分页查询和上方分类查询
+     * @param pageNum 开始页
+     * @param pageSize  一页多少条数据
+     * @param categoryId   分类id
+     * @return
+     */
+    @GetMapping("/articleList")
+    public ResponseResult articleList(Integer pageNum,Integer pageSize,Long categoryId){
+    return articleService.articleList(pageNum,pageSize,categoryId);
+
     }
 }
 
