@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hj.constants.SystemConstants;
 import com.hj.domain.ResponseResult;
+import com.hj.domain.VO.ArticleDetailVo;
 import com.hj.domain.VO.ArticleListVo;
 import com.hj.domain.VO.HotArticleListVo;
 import com.hj.domain.VO.PageVo;
@@ -98,6 +99,26 @@ private CategoryService categoryService;
         List<ArticleListVo> articleListVos = BeanCopyUtils.copyBeanList(articles, ArticleListVo.class);
         PageVo pageVo = new PageVo(articleListVos,page.getTotal());
         return ResponseResult.okResult(pageVo);
+    }
+
+    /**
+     * 查询文章正文
+     * 要求在文章列表点击阅读全文时能够跳转到文章详情页面，可以让用户阅读文章正文。
+     *
+     * 	①要在文章详情中展示其分类名
+     *
+     * @param id  文章id
+     * @return
+     */
+    @Override
+    public ResponseResult getArticleDetail(Long id) {
+        //1.根据id查询article对象
+        Article article = getById(id);
+        //2.把name查询出来
+        article.setCategoryName( categoryService.getById(article.getCategoryId()).getName());
+        //3.封装vo
+        ArticleDetailVo articleDetailVo = BeanCopyUtils.copyBean(article, ArticleDetailVo.class);
+        return ResponseResult.okResult(articleDetailVo);
     }
 
 
