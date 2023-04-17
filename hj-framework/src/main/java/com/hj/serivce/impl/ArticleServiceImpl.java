@@ -114,7 +114,7 @@ private CategoryService categoryService;
     public ResponseResult getArticleDetail(Long id) {
         //1.根据id查询article对象
         Article article = getById(id);
-        //2.把name查询出来
+        //2.把name查询出来,并把数据写入对象
         article.setCategoryName( categoryService.getById(article.getCategoryId()).getName());
         //3.封装vo
         ArticleDetailVo articleDetailVo = BeanCopyUtils.copyBean(article, ArticleDetailVo.class);
