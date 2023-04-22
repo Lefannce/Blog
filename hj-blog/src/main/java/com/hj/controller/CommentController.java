@@ -4,12 +4,18 @@ import com.hj.constants.SystemConstants;
 import com.hj.domain.ResponseResult;
 import com.hj.domain.entity.Comment;
 import com.hj.serivce.CommentService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import jdk.nashorn.internal.runtime.logging.Logger;
+import org.apiguardian.api.API;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/comment")
+@Api(tags = "评论",description = "评论相关接口")
 public class CommentController {
 
     @Autowired
@@ -32,6 +38,12 @@ public class CommentController {
     友链评论
      */
     @GetMapping("/linkCommentList")
+    @ApiOperation(value = "友链评论列表",notes = "获取一页友链评论")
+     @ApiImplicitParams({
+           @ApiImplicitParam(name = "pageNum",value = "页号"),
+           @ApiImplicitParam(name = "pageSize",value = "每页大小")
+    }
+    )
     public ResponseResult linkCommentList(Integer pageNum, Integer pageSize) {
         return commentService.commentList(SystemConstants.LINK_COMMENT, null, pageNum, pageSize);
     }

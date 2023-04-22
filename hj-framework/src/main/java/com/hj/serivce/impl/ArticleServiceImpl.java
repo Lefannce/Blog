@@ -14,7 +14,9 @@ import com.hj.mapper.ArticleMapper;
 import com.hj.serivce.ArticleService;
 import com.hj.serivce.CategoryService;
 import com.hj.utils.BeanCopyUtils;
+import com.hj.utils.RedisCache;
 import io.netty.util.internal.ObjectUtil;
+import io.swagger.models.auth.In;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
 @Autowired
 private CategoryService categoryService;
+@Autowired
+private RedisCache redisCache;
     @Override
     public ResponseResult hotArticleList() {
         //查询热门文章 封装成ResponseResult返回
@@ -118,7 +122,24 @@ private CategoryService categoryService;
         article.setCategoryName( categoryService.getById(article.getCategoryId()).getName());
         //3.封装vo
         ArticleDetailVo articleDetailVo = BeanCopyUtils.copyBean(article, ArticleDetailVo.class);
+
+        //从redis获取viewCount,写入vo
+        Integer cacheMapValue = redisCache.getCacheMapValue("article:viewCount", id.toString());
+        articleDetailVo.setViewCount(cacheMapValue.longValue());
         return ResponseResult.okResult(articleDetailVo);
+    }
+
+    /**
+     * 更新redis中的数据
+     * @param id
+     * @return
+     */
+    @Override
+    public ResponseResult updateViewCount(Long id) {
+
+         //更新redis中对应 id的浏览量
+        redisCache.incrementCacheMapValue("article:viewCount",id.toString(),1);
+        return ResponseResult.okResult();
     }
 
 

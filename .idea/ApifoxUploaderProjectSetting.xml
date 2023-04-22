@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ApifoxUploaderProjectSetting">
+    <option name="apifoxAccessToken" value="APS-2jV04QOBwo19XoK7ZAS0NJ1GeW2SZmuq" />
+    <option name="apifoxApiOverwriteMode" value="覆盖所有字段" />
+    <option name="apifoxProjectIds">
+      <array>
+        <option value="# ModuleName:ProjectID" />
+        <option value="hj-blog:2504776" />
+        <option value="hj-admin:2504776" />
+        <option value="hj-framework:2504776" />
+      </array>
+    </option>
+    <option name="yapiTokens" value="" />
+  </component>
+</project>
