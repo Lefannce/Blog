@@ -1,6 +1,9 @@
 package com.hj.serivce;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hj.domain.ResponseResult;
+import com.hj.domain.VO.PageVo;
+import com.hj.domain.dto.TagListDto;
 import com.hj.domain.entity.Tag;
 
 
@@ -12,5 +15,6 @@ import com.hj.domain.entity.Tag;
  */
 public interface TagService extends IService<Tag> {
 
+    ResponseResult<PageVo> pageTagList(Integer pageNum, Integer pageSize, TagListDto tagListDto);
 }
 

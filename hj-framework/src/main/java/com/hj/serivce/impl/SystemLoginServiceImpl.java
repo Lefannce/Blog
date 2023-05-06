@@ -6,10 +6,12 @@ import com.hj.domain.entity.User;
 import com.hj.serivce.LoginService;
 import com.hj.utils.JwtUtil;
 import com.hj.utils.RedisCache;
+import com.hj.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -45,5 +47,14 @@ public class SystemLoginServiceImpl implements LoginService {
         Map<String,String> map = new HashMap<>();
         map.put("token",jwt);
         return ResponseResult.okResult(map);
+    }
+
+    @Override
+    public ResponseResult logout() {
+        //获取当前用户id
+        Long userId = SecurityUtils.getUserId();
+        //删除redis中对应值
+        redisCache.deleteObject("login:"+userId);
+        return ResponseResult.okResult();
     }
 }
