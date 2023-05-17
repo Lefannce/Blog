@@ -1,10 +1,12 @@
 package com.hj.serivce.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hj.constants.SystemConstants;
 import com.hj.domain.ResponseResult;
 import com.hj.domain.VO.CategoryVo;
+import com.hj.domain.VO.PageVo;
 import com.hj.domain.entity.Article;
 import com.hj.domain.entity.Category;
 import com.hj.mapper.CategoryMapper;
@@ -14,6 +16,7 @@ import com.hj.utils.BeanCopyUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -60,6 +63,22 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         List<CategoryVo> categoryVos = BeanCopyUtils.copyBeanList(collect, CategoryVo.class);
 
         return ResponseResult.okResult(categoryVos);
+    }
+
+    @Override
+    public PageVo selectCategoryList(Category category, Integer pageNum, Integer pageSize) {
+        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(StringUtils.hasText(category.getName()),Category::getName,category.getName());
+        queryWrapper.eq(StringUtils.hasText(category.getStatus()),Category::getStatus,category.getStatus());
+
+        Page<Category> categoryPage = new Page<>();
+        categoryPage.setSize(pageSize);
+        categoryPage.setCurrent(pageNum);
+        page(categoryPage,queryWrapper);
+        PageVo pageVo = new PageVo();
+        pageVo.setTotal(categoryPage.getTotal());
+        pageVo.setRows(categoryPage.getRecords());
+        return pageVo;
     }
 }
 

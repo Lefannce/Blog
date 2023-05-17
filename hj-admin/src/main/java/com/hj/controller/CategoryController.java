@@ -14,9 +14,7 @@ import com.hj.utils.BeanCopyUtils;
 import com.hj.utils.WebUtils;
 import com.sun.xml.internal.bind.v2.TODO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -67,7 +65,52 @@ public class CategoryController {
         }
     }
 
+    /**
+     * 分类列表查询
+     *
+     * @param category
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @GetMapping("/list")
+    public ResponseResult CategoryList(Category category, Integer pageNum, Integer pageSize) {
+        PageVo vo = categoryService.selectCategoryList(category, pageNum, pageSize);
+        return ResponseResult.okResult(vo);
+    }
 
+    /**
+     * 新增分类
+     * @param category
+     * @return
+     */
+    @PostMapping
+    public ResponseResult addCategory(@RequestBody Category category){
+    categoryService.save(category);
+    return ResponseResult.okResult();
+    }
 
+    /**
+     * 修改分类回显
+     * @param id
+     * @return
+     */
+    @GetMapping("{id}")
+    public ResponseResult selCategoryById(@PathVariable Long id){
+        Category byId = categoryService.getById(id);
+        return ResponseResult.okResult(byId);
 
+    }
+
+    @PutMapping
+    public ResponseResult edit(@RequestBody Category category){
+        categoryService.updateById(category);
+        return ResponseResult.okResult();
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseResult del(@PathVariable Long id){
+        categoryService.removeById(id);
+        return ResponseResult.okResult();
+    }
 }

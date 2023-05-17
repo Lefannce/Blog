@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.xml.transform.OutputKeys;
+import java.util.List;
 
 @RestController
 @RequestMapping("system/role")
@@ -92,5 +93,15 @@ public class RoleController {
         roleService.removeById(id);
         roleMenuService.deleteRoleMenu(id);
         return ResponseResult.okResult();
+    }
+
+    /**
+     * 新增用户回显
+     * @return
+     */
+    @GetMapping("/listAllRole")
+    public ResponseResult selectRoleList(){
+       List<Role> roles =  roleService.selectRoleList();
+        return ResponseResult.okResult(roles);
     }
 }

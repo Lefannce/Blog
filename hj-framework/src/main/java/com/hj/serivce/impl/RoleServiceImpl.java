@@ -1,8 +1,10 @@
 package com.hj.serivce.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hj.constants.SystemConstants;
 import com.hj.domain.ResponseResult;
 import com.hj.domain.VO.PageVo;
 import com.hj.domain.VO.RoleVo;
@@ -20,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.hj.constants.SystemConstants.NORMAL;
 
 /**
  * 角色信息表(Role)表服务实现类
@@ -102,9 +106,26 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         addRoleMenu(role);
     }
 
+    @Override
+    public List<Role> selectRoleList() {
+       return list(Wrappers.<Role>lambdaQuery().eq(Role::getStatus, NORMAL));
+
+
+    }
+
+    @Override
+    public List<Role> selectRoleAll() {
+        return list(Wrappers.<Role>lambdaQuery().eq(Role::getStatus,NORMAL));
+    }
+
+    @Override
+    public List<Long> selectRoleIdByUserId(Long id) {
+        return  getBaseMapper().selectRoleUser(id);
+
+    }
+
     /**
      * 添加角色菜单关联表
-     *
      * @param role
      */
     private void addRoleMenu(Role role) {
