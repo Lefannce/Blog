@@ -5,21 +5,26 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hj.constants.SystemConstants;
 import com.hj.domain.ResponseResult;
-import com.hj.domain.VO.ArticleDetailVo;
-import com.hj.domain.VO.ArticleListVo;
-import com.hj.domain.VO.HotArticleListVo;
-import com.hj.domain.VO.PageVo;
+import com.hj.domain.VO.*;
+import com.hj.domain.dto.AddArticleDto;
+import com.hj.domain.dto.ArticleDto;
 import com.hj.domain.entity.Article;
+import com.hj.domain.entity.ArticleTag;
 import com.hj.mapper.ArticleMapper;
 import com.hj.serivce.ArticleService;
+import com.hj.serivce.ArticleTagService;
 import com.hj.serivce.CategoryService;
 import com.hj.utils.BeanCopyUtils;
 import com.hj.utils.RedisCache;
+import io.jsonwebtoken.lang.Strings;
 import io.netty.util.internal.ObjectUtil;
 import io.swagger.models.auth.In;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -36,6 +41,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 private CategoryService categoryService;
 @Autowired
 private RedisCache redisCache;
+
+@Autowired
+private ArticleTagService articleTagService;
     @Override
     public ResponseResult hotArticleList() {
         //查询热门文章 封装成ResponseResult返回
@@ -139,6 +147,102 @@ private RedisCache redisCache;
 
          //更新redis中对应 id的浏览量
         redisCache.incrementCacheMapValue("article:viewCount",id.toString(),1);
+        return ResponseResult.okResult();
+    }
+
+    /**
+     * 添加博文
+     * @param articleDto
+     * @return
+     */
+    @Override
+    @Transactional  //事务
+    public ResponseResult add(AddArticleDto articleDto) {
+        //添加博客
+        //把dto转换为article
+        Article article = BeanCopyUtils.copyBean(articleDto, Article.class);
+        save(article);
+
+        //把传进来的tag转换为tag实体类
+        List<ArticleTag> articleTags = articleDto.getTags().stream()
+                .map(tagId -> new ArticleTag(article.getId(), tagId))
+                .collect(Collectors.toList());
+
+        //添加 博客和标签的关联
+        articleTagService.saveBatch(articleTags);
+        return ResponseResult.okResult();
+    }
+
+    /**
+     * 文章列表分页查询
+     * @param pageNum
+     * @param pageSize
+     * @param articleDto
+     * @return
+     */
+    @Override
+    public ResponseResult<Article> pageList(Integer pageNum, Integer pageSize, ArticleDto articleDto) {
+        //根据标题和摘要进行模糊查询
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(StringUtils.hasText(articleDto.getSummary()),Article::getSummary,articleDto.getSummary());
+        queryWrapper.like(StringUtils.hasText(articleDto.getTitle()),Article::getTitle,articleDto.getTitle());
+        //分页查询
+        Page<Article> articlePage = new Page<>();
+        articlePage.setCurrent(pageNum);
+        articlePage.setSize(pageSize);
+        page(articlePage,queryWrapper);
+        //封装数据返回
+        PageVo pageVo = new PageVo(articlePage.getRecords(), articlePage.getTotal());
+        return ResponseResult.okResult(pageVo);
+    }
+
+    /**
+     * 修改文章,查询文章,回显
+     * @param id
+     * @return
+     */
+    @Override
+    public ResponseResult<UpdateArticleVo> getArticleById(Long id) {
+        Article byId = getById(id);
+
+        //查询文章关联的标签id
+        LambdaQueryWrapper<ArticleTag> articleTagLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        articleTagLambdaQueryWrapper.eq(ArticleTag::getArticleId,id);
+        List<ArticleTag> list = articleTagService.list(articleTagLambdaQueryWrapper);
+        List<Long> collect = list.stream()
+                .map(articleTag -> articleTag.getTagId()).collect(Collectors.toList());
+        UpdateArticleVo updateArticleVo = BeanCopyUtils.copyBean(byId, UpdateArticleVo.class);
+        updateArticleVo.setTags(collect);
+        return ResponseResult.okResult(updateArticleVo);
+    }
+
+    @Override
+    public ResponseResult articleUpdate(AddArticleDto articleDto) {
+        //更新博客
+        Article article = BeanCopyUtils.copyBean(articleDto, Article.class);
+        updateById(article);
+        //删除原有的tag
+        LambdaQueryWrapper<ArticleTag> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ArticleTag::getArticleId,article.getId());
+        articleTagService.remove(queryWrapper);
+        //把传进来的tag转换为tag实体类
+        List<ArticleTag> articleTags = articleDto.getTags().stream()
+                .map(tagId -> new ArticleTag(article.getId(), tagId))
+                .collect(Collectors.toList());
+
+        //添加 博客和标签的关联
+        articleTagService.saveBatch(articleTags);
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult delArticle(Long id) {
+        //删除文章
+        removeById(id);
+        //删除文章关联tag表
+        LambdaQueryWrapper<ArticleTag> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ArticleTag::getArticleId,id);
+        articleTagService.remove(queryWrapper);
         return ResponseResult.okResult();
     }
 

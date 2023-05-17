@@ -16,5 +16,9 @@ import com.hj.domain.entity.Tag;
 public interface TagService extends IService<Tag> {
 
     ResponseResult<PageVo> pageTagList(Integer pageNum, Integer pageSize, TagListDto tagListDto);
+
+    void addtag(Tag tag);
+
+    void deleteTag(Long id);
 }
 

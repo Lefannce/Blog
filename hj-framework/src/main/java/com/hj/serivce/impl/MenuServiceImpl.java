@@ -2,12 +2,16 @@ package com.hj.serivce.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hj.domain.ResponseResult;
+import com.hj.domain.VO.MenuVo;
 import com.hj.domain.entity.Menu;
 import com.hj.mapper.MenuMapper;
 import com.hj.serivce.MenuService;
+import com.hj.utils.BeanCopyUtils;
 import com.hj.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -71,6 +75,52 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
 
 
        return menuTree;
+    }
+
+    @Override
+    public List<Menu> selectMenuList(Menu menu) {
+        LambdaQueryWrapper<Menu> menuLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        menuLambdaQueryWrapper
+                .like(StringUtils.hasText(menu.getMenuName()),Menu::getMenuName,menu.getMenuName())
+                .eq(StringUtils.hasText(menu.getStatus()),Menu::getStatus,menu.getStatus())
+                .orderByAsc(Menu::getParentId,Menu::getOrderNum);//菜单要按照父菜单id和orderNum进行排序
+        return list(menuLambdaQueryWrapper);
+    }
+
+    /**
+     * 判断是否存子菜单
+     * 通过查询此id是否存在于parent_id一栏
+     * @param id
+     * @return
+     */
+    @Override
+    public boolean hasChild(Long id) {
+        LambdaQueryWrapper<Menu> menuLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        menuLambdaQueryWrapper.eq(Menu::getParentId,id);
+        return count(menuLambdaQueryWrapper) !=0; //0个就代表没有子菜单
+
+    }
+
+    @Override
+    public ResponseResult selectMenu(Long id) {
+        Menu menu = menuMapper.selectById(id);
+        MenuVo menuVo = BeanCopyUtils.copyBean(menu, MenuVo.class);
+        return ResponseResult.okResult(menuVo);
+    }
+
+    @Override
+    public ResponseResult updateMenu(Menu menu) {
+        //判断parent_id是否是当前id
+        if (menu.getId() == menu.getParentId()){
+            return ResponseResult.errorResult(500,"修改菜单'" + menu.getMenuName() + "'失败，上级菜单不能选择自己");
+        }
+        updateById(menu);
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    public List<Long> selectMenuListByRoleId(Long id) {
+       return getBaseMapper().selectMenuListByRoleId(id);
     }
 
     private List<Menu> builderMenuTree(List<Menu> menus,Long parentId) {

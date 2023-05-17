@@ -3,6 +3,28 @@
   <component name="EasyCodeTableSetting">
     <option name="tableInfoMap">
       <map>
+        <entry key="com.hj.controller.MenuController">
+          <value>
+            <TableInfoDTO>
+              <option name="fullColumn">
+                <list>
+                  <ColumnInfoDTO>
+                    <option name="custom" value="false" />
+                    <option name="ext" value="{}" />
+                    <option name="name" value="menuService" />
+                    <option name="type" value="com.hj.serivce.MenuService" />
+                  </ColumnInfoDTO>
+                </list>
+              </option>
+              <option name="name" value="MenuController" />
+              <option name="preName" value="" />
+              <option name="saveModelName" value="" />
+              <option name="savePackageName" value="" />
+              <option name="savePath" value="" />
+              <option name="templateGroupName" value="" />
+            </TableInfoDTO>
+          </value>
+        </entry>
         <entry key="com.hj.mapper.ArticleMapper">
           <value>
             <TableInfoDTO>
@@ -15,6 +37,37 @@
               <option name="savePackageName" value="" />
               <option name="savePath" value="" />
               <option name="templateGroupName" value="" />
+            </TableInfoDTO>
+          </value>
+        </entry>
+        <entry key="hj_blog.sg_article_tag">
+          <value>
+            <TableInfoDTO>
+              <option name="comment" value="文章标签关联表" />
+              <option name="fullColumn">
+                <list>
+                  <ColumnInfoDTO>
+                    <option name="comment" value="文章id" />
+                    <option name="custom" value="false" />
+                    <option name="ext" value="{}" />
+                    <option name="name" value="articleId" />
+                    <option name="type" value="java.lang.Long" />
+                  </ColumnInfoDTO>
+                  <ColumnInfoDTO>
+                    <option name="comment" value="标签id" />
+                    <option name="custom" value="false" />
+                    <option name="ext" value="{}" />
+                    <option name="name" value="tagId" />
+                    <option name="type" value="java.lang.Long" />
+                  </ColumnInfoDTO>
+                </list>
+              </option>
+              <option name="name" value="SgArticleTag" />
+              <option name="preName" value="sg_" />
+              <option name="saveModelName" value="hj-framework" />
+              <option name="savePackageName" value="" />
+              <option name="savePath" value="./hj-framework/src/main/java" />
+              <option name="templateGroupName" value="MybatisPlus" />
             </TableInfoDTO>
           </value>
         </entry>

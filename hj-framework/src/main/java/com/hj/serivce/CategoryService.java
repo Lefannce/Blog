@@ -2,6 +2,7 @@ package com.hj.serivce;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.hj.domain.ResponseResult;
+import com.hj.domain.VO.PageVo;
 import com.hj.domain.entity.Category;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -17,5 +18,6 @@ public interface CategoryService extends IService<Category> {
 
 
     ResponseResult getCategoryList();
+
 }
 

@@ -1,6 +1,7 @@
 package com.hj.serivce;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hj.domain.ResponseResult;
 import com.hj.domain.entity.Role;
 
 import java.util.List;
@@ -15,5 +16,11 @@ import java.util.List;
 public interface RoleService extends IService<Role> {
 
     List<String> selectRoleKeyByUserId(Long id);
+
+    ResponseResult roleList(Role role, Integer pageNum, Integer pageSize);
+
+    void addRole(Role role);
+
+    void updateRole(Role role);
 }
 

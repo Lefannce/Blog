@@ -1,6 +1,7 @@
 package com.hj.serivce;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hj.domain.ResponseResult;
 import com.hj.domain.entity.Menu;
 
 import java.util.List;
@@ -17,5 +18,15 @@ public interface MenuService extends IService<Menu> {
     List<String> selectPermsByUserId(Long id);
 
     List<Menu> selectRouterMenuTreeByUserId(Long userId);
+
+    List<Menu> selectMenuList(Menu menu);
+
+    boolean hasChild(Long id);
+
+    ResponseResult selectMenu(Long id);
+
+    ResponseResult updateMenu(Menu menu);
+
+    List<Long> selectMenuListByRoleId(Long id);
 }
 

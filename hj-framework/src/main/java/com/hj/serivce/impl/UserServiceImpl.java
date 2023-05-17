@@ -1,9 +1,12 @@
 package com.hj.serivce.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hj.domain.ResponseResult;
+import com.hj.domain.VO.PageVo;
 import com.hj.domain.VO.UserInfoVo;
+import com.hj.domain.VO.UserVo;
 import com.hj.domain.entity.User;
 import com.hj.enums.AppHttpCodeEnum;
 import com.hj.exception.SystemException;
@@ -16,6 +19,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import java.util.List;
 
 /**
  * 用户表(User)表服务实现类
@@ -91,6 +96,36 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         save(user);
         return ResponseResult.okResult();
     }
+
+    /**
+     * 需要用户分页列表接口。
+     * 可以根据用户名模糊搜索。
+     * 以进行手机号的搜索。
+     *	可以进行状态的查询。
+     * @param user
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public ResponseResult selectUserList(User user, Integer pageNum, Integer pageSize) {
+        //根据用户名模糊查询,根据手机号查询,根据状态查询
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(StringUtils.hasText(user.getUserName()),User::getUserName,user.getUserName());
+        queryWrapper.like(StringUtils.hasText(user.getPhonenumber()),User::getPhonenumber,user.getPhonenumber());
+        queryWrapper.eq(StringUtils.hasText(user.getStatus()),User::getStatus,user.getStatus());
+        //分页查询
+        Page<User> userPage = new Page<>();
+        userPage.setCurrent(pageNum);
+        userPage.setSize(pageSize);
+        page(userPage,queryWrapper);
+
+        List<UserVo> userVos = BeanCopyUtils.copyBeanList(userPage.getRecords(), UserVo.class);
+        PageVo pageVo = new PageVo(userVos, userPage.getTotal());
+        return ResponseResult.okResult(pageVo);
+
+    }
+
 
     private boolean userNameExist(String userName) {
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();

@@ -3,11 +3,14 @@ package com.hj.domain.entity;
 import java.util.Date;
 
 import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
 /**
  * 角色信息表(Role)表实体类
  *
@@ -19,7 +22,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("sys_role")
-public class Role  {
+public class Role {
     //角色ID@TableId
     private Long id;
 
@@ -44,6 +47,9 @@ public class Role  {
     //备注
     private String remark;
 
+    //关联菜单id数组，不是表中的字段  用来接收参数使用
+    @TableField(exist = false)
+    private Long[] menuIds;
 
 
 }

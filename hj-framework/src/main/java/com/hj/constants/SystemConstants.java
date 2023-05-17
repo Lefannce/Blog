@@ -46,4 +46,6 @@ public class SystemConstants
 
     //menu_type 等于F为目录
     public static final String BUTTON = "F";
+        /** 正常状态 */
+    public static final String NORMAL = "0";
 }
